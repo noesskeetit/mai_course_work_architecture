@@ -81,35 +81,46 @@ Rel(ptp_chat_service, db, "INSERT/SELECT/UPDATE", "SQL")
   - Выходные параметры: массив сообщений
 
 ### Модель данных
+
 ```puml
 @startuml
 
 class User {
-  id
-  login
-  first_name
-  last_name
-  email
-  title
+  user_id
+  user_login
+  user_firstname
+  user_lastname
+  user_email
+  user_title
+  user_password
 }
 
 class GroupChat {
-  id
-  name
-  participants
-  messages
+  group_chat_id
+  group_chat_name
+  group_chat_participants
 }
 
-class PtPChat {
-  id
-  sender
-  receiver
-  message
-  date
+class GroupChatMessage {
+  message_id
+  chat_id
+  text
+  message_author_id
+  timestamp
 }
 
-User "1" -- "*" GroupChat : participants
-User <- PtPChat
+class PtPMessage {
+  message_id
+  sender_id
+  receiver_id
+  text
+  timestamp
+}
+
+User <-- GroupChat
+GroupChat <-- GroupChatMessage
+User <-- PtPMessage
 
 @enduml
+
 ```

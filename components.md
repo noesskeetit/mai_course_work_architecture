@@ -19,9 +19,9 @@ Person(user, "Пользователь")
 System_Ext(web_site, "Клиентский веб-сайт", "HTML, CSS, JavaScript, React", "Веб-интерфейс")
 
 System_Boundary(messenger_app, "Мессенджер Приложение") {
-   Container(user_service, "Сервис пользователей", "C++", "Сервис управления пользователями", $tags = "microService")    
-   Container(group_chat_service, "Сервис групповых чатов", "C++", "Сервис управления групповыми чатами", $tags = "microService") 
-   Container(ptp_chat_service, "Сервис PtP чатов", "C++", "Сервис управления приватными чатами", $tags = "microService")   
+   Container(user_service, "Сервис пользователей", "Python", "Сервис управления пользователями", $tags = "microService")    
+   Container(group_chat_service, "Сервис групповых чатов", "Python", "Сервис управления групповыми чатами", $tags = "microService") 
+   Container(ptp_chat_service, "Сервис PtP чатов", "Python", "Сервис управления приватными чатами", $tags = "microService")   
    ContainerDb(db, "База данных", "MariaDB", "Хранение данных о пользователях, чатах и сообщениях", $tags = "storage")
    
 }

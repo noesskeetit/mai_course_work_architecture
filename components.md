@@ -91,14 +91,23 @@ class User {
   user_firstname
   user_lastname
   user_email
-  user_title
   user_password
+  user_title
+  insert_date
+  update_date
 }
 
 class GroupChat {
   group_chat_id
   group_chat_name
-  group_chat_participants
+  insert_date
+  update_date
+}
+
+class GroupChatParticipants {
+  group_chat_participant_id
+  group_chat_id
+  user_id
 }
 
 class GroupChatMessage {
@@ -117,10 +126,10 @@ class PtPMessage {
   timestamp
 }
 
-User <-- GroupChat
+User <-- GroupChatParticipants
+GroupChatParticipants --> GroupChat : Participants
 GroupChat <-- GroupChatMessage
 User <-- PtPMessage
 
 @enduml
-
 ```

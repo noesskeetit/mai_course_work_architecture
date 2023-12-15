@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  fastapi:
+    build: .
+    ports:
+      - "8000:80"
+    depends_on:
+      - mariadb
+    environment:
+      DATABASE_URL: "mysql+mysqlconnector://root:root@mariadb:3306/dbname"
+
+  mariadb:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dbname
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"

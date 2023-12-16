@@ -1,5 +1,4 @@
 import typing
-
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine

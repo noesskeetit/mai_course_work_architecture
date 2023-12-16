@@ -1,21 +1,18 @@
-version: '3'
+version: '3.2'
 
 services:
-  fastapi:
-    build: .
+  fast-api-auth:
+    build: ./dependencies
     ports:
-      - "8000:80"
+      - "80:80"
     depends_on:
-      - mariadb
-    environment:
-      DATABASE_URL: "mysql+mysqlconnector://root:root@mariadb:3306/dbname"
-
-  mariadb:
+      - db
+  db:
     image: mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: dbname
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+    volumes:
+      - ./mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true

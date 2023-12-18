@@ -1,92 +1,81 @@
-CREATE DATABASE delivery_service;
--- delivery_service.`user` definition
+-- Создание БД
+CREATE DATABASE messenger_service;
 
-CREATE TABLE delivery_service.user_entity (
-	user_entity_id varchar(100) NOT NULL DEFAULT UUID(),
-	login varchar(100) NOT NULL,
-	password varchar(100) NOT NULL,
-	first_name varchar(100) NOT NULL,
-	last_name varchar(100) NOT NULL,
-	email varchar(100) NOT NULL,
-	insert_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	update_date DATETIME NULL ON UPDATE CURRENT_TIMESTAMP NOT NULL
+
+-- Создание таблицы User
+CREATE TABLE messenger_service.User (
+  user_id INT PRIMARY KEY AUTO_INCREMENT,
+  user_login VARCHAR(50) NOT NULL UNIQUE,
+  user_firstname VARCHAR(50) NOT NULL,
+  user_lastname VARCHAR(50) NOT NULL,
+  user_email VARCHAR(50) NOT NULL UNIQUE,
+  user_password VARCHAR(50) NOT NULL,
+  user_title VARCHAR(20),
+  insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL ,
+  update_date DATETIME NULL ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
-ALTER TABLE delivery_service.user_entity ADD CONSTRAINT user_entity_PK PRIMARY KEY (user_entity_id);
-
-CREATE TABLE delivery_service.delivery (
-	delivery_id varchar(100) NOT NULL DEFAULT UUID(),
-	title varchar(100) NOT NULL,
-	sender_id varchar(100) NOT NULL,
-	applier_id varchar(100) NOT NULL,
-	status varchar(100) NOT NULL,
-    insert_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	update_date DATETIME NULL ON UPDATE CURRENT_TIMESTAMP NOT NULL
+-- Создание таблицы GroupChat
+CREATE TABLE messenger_service.GroupChat (
+  group_chat_id INT PRIMARY KEY AUTO_INCREMENT,
+  group_chat_name VARCHAR(50) NOT NULL,
+  insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  update_date DATETIME NULL ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
 
-ALTER TABLE delivery_service.delivery ADD CONSTRAINT delivery_PK PRIMARY KEY (delivery_id);
-ALTER TABLE delivery_service.delivery ADD CONSTRAINT user_entity_id_sender_id
-    FOREIGN KEY(sender_id) REFERENCES user_entity(user_entity_id);
-ALTER TABLE delivery_service.delivery ADD CONSTRAINT user_entity_id_applier_id
-    FOREIGN KEY(applier_id) REFERENCES user_entity(user_entity_id);
-
--- delivery_service.package definition
-
-CREATE TABLE delivery_service.package (
-	package_id varchar(100) NOT NULL DEFAULT UUID(),
-	title varchar(100) NOT NULL,
-	description varchar(1000) NULL,
-	delivery_id varchar(100) NOT NULL,
-    insert_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	update_date DATETIME NULL ON UPDATE CURRENT_TIMESTAMP NOT NULL
+-- Создание таблицы GroupChatParticipants
+CREATE TABLE messenger_service.GroupChatParticipants (
+  group_chat_participant_id INT PRIMARY KEY AUTO_INCREMENT,
+  group_chat_id INT NOT NULL,
+  user_id INT,
+  FOREIGN KEY (group_chat_id) REFERENCES GroupChat(group_chat_id),
+  FOREIGN KEY (user_id) REFERENCES User(user_id)
 );
 
-ALTER TABLE delivery_service.package ADD CONSTRAINT package_PK PRIMARY KEY (package_id);
-ALTER TABLE delivery_service.package ADD CONSTRAINT delivery_id_package_id
-    FOREIGN KEY(delivery_id) REFERENCES delivery(delivery_id);
+-- Создание таблицы GroupChatMessage
+CREATE TABLE messenger_service.GroupChatMessage (
+  message_id INT PRIMARY KEY AUTO_INCREMENT,
+  chat_id INT NOT NULL,
+  text TEXT NOT NULL ,
+  message_author_id INT NOT NULL ,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL ,
+  FOREIGN KEY (chat_id) REFERENCES GroupChat(group_chat_id),
+  FOREIGN KEY (message_author_id) REFERENCES User(user_id)
+);
 
+-- Создание таблицы PtPMessage
+CREATE TABLE messenger_service.PtPMessage (
+  message_id INT PRIMARY KEY AUTO_INCREMENT,
+  sender_id INT NOT NULL,
+  receiver_id INT NOT NULL,
+  text TEXT NOT NULL ,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  FOREIGN KEY (sender_id) REFERENCES User(user_id),
+  FOREIGN KEY (receiver_id) REFERENCES User(user_id)
+);
 
+-- Вставка первичных данных
+INSERT INTO messenger_service.User (user_id, user_login, user_firstname, user_lastname, user_email, user_password, user_title) VALUES
+(1, 'user1', 'John', 'Doe', 'john.doe@example.com', 'password1', 'mister'),
+(2, 'user2', 'Jane', 'Doe', 'jane.doe@example.com', 'password2', 'miss'),
+(3, 'user3', 'Bob', 'Smith', 'bob.smith@example.com', 'password3', 'mister');
 
+INSERT INTO messenger_service.GroupChat (group_chat_id, group_chat_name) VALUES
+(1, 'Team Chat'),
+(2, 'Project Chat');
 
+INSERT INTO messenger_service.GroupChatParticipants (group_chat_participant_id, group_chat_id, user_id) VALUES
+(1, 1, 1),
+(2, 1, 2),
+(3, 2, 2),
+(4, 2, 3);
 
+INSERT INTO messenger_service.GroupChatMessage (message_id, chat_id, text, message_author_id) VALUES
+(1, 1, 'Hello team!', 1),
+(2, 1, 'Hi everyone!', 2),
+(3, 2, 'Discussing project details...', 2),
+(4, 2, 'Sure, let"s meet tomorrow.', 3);
 
--- inserts user_entity
-INSERT INTO delivery_service.user_entity
-(user_entity_id, login, password, first_name, last_name, email, insert_date, update_date)
-VALUES('8722f110-9467-11ee-8e92-0242ac120001', 'ivan1', 'test', 'Ivan', 'Ivanov',  'ivan@mail.ru', current_timestamp(), '0000-00-00 00:00:00');
-INSERT INTO delivery_service.user_entity
-(user_entity_id, login, password, first_name, last_name, email, insert_date, update_date)
-VALUES('8722f110-9467-11ee-8e92-0242ac120002', 'petr1', 'test', 'Petr', 'Petrov',  'petr@mail.ru', current_timestamp(), '0000-00-00 00:00:00');
-INSERT INTO delivery_service.user_entity
-(user_entity_id, login, password, first_name, last_name, email, insert_date, update_date)
-VALUES('8722f110-9467-11ee-8e92-0242ac120003', 'ilya1', 'test', 'Ilya', 'Vasilev', 'ilya@mail.ru', current_timestamp(), '0000-00-00 00:00:00');
-
-
--- inserts delivery
-INSERT INTO delivery_service.delivery
-(delivery_id, title, sender_id, applier_id, status, insert_date, update_date)
-VALUES('fa1f2110-9467-11ee-8e92-0242ac120001', 'delivery one',   '8722f110-9467-11ee-8e92-0242ac120001', '8722f110-9467-11ee-8e92-0242ac120002', 'READY', current_timestamp(), '0000-00-00 00:00:00');
-INSERT INTO delivery_service.delivery
-(delivery_id, title, sender_id, applier_id, status, insert_date, update_date)
-VALUES('fa1f2110-9467-11ee-8e92-0242ac120002', 'delivery two',   '8722f110-9467-11ee-8e92-0242ac120002', '8722f110-9467-11ee-8e92-0242ac120003', 'PACKAGING', current_timestamp(), '0000-00-00 00:00:00');
-INSERT INTO delivery_service.delivery
-(delivery_id, title, sender_id, applier_id, status, insert_date, update_date)
-VALUES('fa1f2110-9467-11ee-8e92-0242ac120003', 'delivery three', '8722f110-9467-11ee-8e92-0242ac120003', '8722f110-9467-11ee-8e92-0242ac120001', 'GOT', current_timestamp(), '0000-00-00 00:00:00');
-
-
--- inserts package
-INSERT INTO delivery_service.package
-(package_id, title, description, delivery_id, insert_date, update_date)
-VALUES('vf7f2110-9467-11ee-8e92-0242ac120001', 'PC', '11400f',   'fa1f2110-9467-11ee-8e92-0242ac120001', current_timestamp(), '0000-00-00 00:00:00');
-INSERT INTO delivery_service.package
-(package_id, title, description, delivery_id, insert_date, update_date)
-VALUES('vf7f2110-9467-11ee-8e92-0242ac120002', 'T-shirt', null,  'fa1f2110-9467-11ee-8e92-0242ac120001', current_timestamp(), '0000-00-00 00:00:00');
-INSERT INTO delivery_service.package
-(package_id, title, description, delivery_id, insert_date, update_date)
-VALUES('vf7f2110-9467-11ee-8e92-0242ac120003', 'Monitor', null,  'fa1f2110-9467-11ee-8e92-0242ac120001', current_timestamp(), '0000-00-00 00:00:00');
-INSERT INTO delivery_service.package
-(package_id, title, description, delivery_id, insert_date, update_date)
-VALUES('vf7f2110-9467-11ee-8e92-0242ac120004', 'Phone', 'Meizu', 'fa1f2110-9467-11ee-8e92-0242ac120002', current_timestamp(), '0000-00-00 00:00:00');
-INSERT INTO delivery_service.package
-(package_id, title, description, delivery_id, insert_date, update_date)
-VALUES('vf7f2110-9467-11ee-8e92-0242ac120005', 'Suit', NULL,     'fa1f2110-9467-11ee-8e92-0242ac120003', current_timestamp(), '0000-00-00 00:00:00');
+INSERT INTO messenger_service.PtPMessage (message_id, sender_id, receiver_id, text) VALUES
+(1, 1, 2, 'Hey Jane, how are you?'),
+(2, 2, 3, 'Bob, do you have the latest report?');

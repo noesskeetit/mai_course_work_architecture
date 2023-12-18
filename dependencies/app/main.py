@@ -6,8 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from models import Base, User, GroupChat, GroupChatParticipants, GroupChatMessage, PtPMessage
 
 # Инициализация базы данных и подключение к MariaDB
-DATABASE_URL = "mysql+mysqlconnector://root:root@mariadb:3306/dbname"
-engine = create_engine(DATABASE_URL)
+# DATABASE_URL = "mysql+mysqlconnector://root:root@mariadb:3306/dbname"
+engine = create_engine("mariadb+mariadbconnector://root:root@db:3306/messenger_service")
 Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -27,23 +27,25 @@ def get_db():
 @app.post("/users/create")
 async def create_user(login: str, password: str, firstname: str, lastname: str, email: str, title: str) -> typing.Dict:
     db = SessionLocal()
-    user = User(
-        user_login=login,
-        user_password=password,
-        user_firstname=firstname,
-        user_lastname=lastname,
-        user_email=email,
-        user_title=title
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    db.close()
+    try:
+        user = User(
+            user_login=login,
+            user_password=password,
+            user_firstname=firstname,
+            user_lastname=lastname,
+            user_email=email,
+            user_title=title
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    finally:
+        db.close()
     return {"status": "User created successfully"}
 
 
 @app.get("/users/{login}")
-async def get_user_by_login(login: str, db: Session = Depends(get_db)) -> typing.Dict[User.user_id, User.user_firstname, User.user_lastname, User.user_email, User.user_title]:
+async def get_user_by_login(login: str, db: Session = Depends(get_db)) -> typing.Dict[str, typing.Any]:
     user = db.query(User).filter(User.user_login == login).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")

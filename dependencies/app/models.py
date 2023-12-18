@@ -12,21 +12,22 @@ class User(Base):
     user_login = Column(String(50), nullable=False, unique=True)
     user_firstname = Column(String(50), nullable=False)
     user_lastname = Column(String(50), nullable=False)
-    user_email = Column(String(100), nullable=False, unique=True)
+    user_email = Column(String(50), nullable=False, unique=True)
     user_password = Column(String(50), nullable=False)
     user_title = Column(String(20))
-    insert_date = Column(DateTime, default=datetime.utcnow)
-    update_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    insert_date = Column(DateTime, default=datetime.utcnow, nullable=False)
+    update_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Define one-to-many relationship with GroupChatParticipants
     group_chat_participants = relationship("GroupChatParticipants", back_populates="user")
+    group_chat_messages = relationship("GroupChatMessage", back_populates="user")
 
 
 class GroupChat(Base):
     __tablename__ = 'group_chats'
 
     group_chat_id = Column(Integer, primary_key=True, autoincrement=True)
-    group_chat_name = Column(String(50), nullable=False, unique=True)
+    group_chat_name = Column(String(50), nullable=False)
     insert_date = Column(DateTime, default=datetime.utcnow)
     update_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

@@ -2,3 +2,5 @@ fastapi
 sqlalchemy
 uvicorn
 mysql-connector-python
+mariadb
+python-multipart

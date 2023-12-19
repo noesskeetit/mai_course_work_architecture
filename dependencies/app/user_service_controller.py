@@ -1,4 +1,5 @@
 import typing
+import uuid
 
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy import func
@@ -28,6 +29,7 @@ async def create_user(login: str, password: str, firstname: str, lastname: str, 
 
         # Создание нового пользователя
         user = User(
+            user_id=str(uuid.uuid4()),
             user_login=login.strip(),
             user_password=password,
             user_firstname=firstname.strip(),

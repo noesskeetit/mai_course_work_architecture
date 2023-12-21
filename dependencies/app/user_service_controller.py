@@ -14,6 +14,7 @@ app = FastAPI()
 
 
 # Реализация сервиса пользователей
+# Создание нового пользователя
 @app.post("/users/create")
 async def create_user(login: str, password: str, firstname: str, lastname: str, email: str, title: str,
                       db: Session = Depends(get_db)) -> typing.Dict:
@@ -46,7 +47,7 @@ async def create_user(login: str, password: str, firstname: str, lastname: str, 
         db.close()
     return {"status": f"User created successfully", "user_id": user_id}
 
-
+# Поиск по логину
 @app.get("/users/login/{login}")
 async def get_user_by_login(login: str, db: Session = Depends(get_db)):
     list_from_1st_sharding_node = get_users_by_login_from_db(' /*sharding 0*/;', login, db)
@@ -59,9 +60,9 @@ async def get_user_by_login(login: str, db: Session = Depends(get_db)):
 
     return list_from_1st_sharding_node[0]
 
-
+# Поиск по маске имени и фамилии
 @app.get("/users/search_user_by_name_and_lastname")
-async def search_user_by_name_and_lastname(firstname: str, lastname: str, db: Session = Depends(get_db)) -> typing.List[typing.Dict[str, typing.Any]]:
+async def search_user_by_name_and_lastname(firstname: str, lastname: str, db: Session = Depends(get_db)):
     list_from_1st_sharding_node = get_users_by_firstname_and_lastname(' /*sharding 0*/;', firstname_mask=firstname, lastname_mask=lastname, db=db)
     list_from_2nd_sharding_node = get_users_by_firstname_and_lastname(' /*sharding 1*/;', firstname_mask=firstname, lastname_mask=lastname, db=db)
 
@@ -115,9 +116,9 @@ def get_users_by_login_from_db(sharding_node: str, login: str, db) -> typing.Lis
 
 def get_users_by_firstname_and_lastname(sharding_node: str, firstname_mask: str, lastname_mask: str,  db):
     existing_user_by_name_and_lastname_query = text(
-        f"SELECT user_id, user_login, user_firstname, user_lastname, user_email, user_title FROM messenger_service.users WHERE users.user_firstname like :%firstname_mask% and users.user_lastname like :%lastname_mask% {sharding_node}")
+        f"SELECT user_id, user_login, user_firstname, user_lastname, user_email, user_title FROM messenger_service.users WHERE users.user_firstname like :firstname_mask and users.user_lastname like :lastname_mask {sharding_node}")
 
-    params = {'firstname_mask': firstname_mask, 'lastname_mask':  lastname_mask}
+    params = {'firstname_mask': f"%{firstname_mask}%", 'lastname_mask':  f"%{lastname_mask}%"}
     result = db.execute(existing_user_by_name_and_lastname_query, params)
     result = result.fetchall()
 

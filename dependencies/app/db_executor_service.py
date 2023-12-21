@@ -23,24 +23,20 @@ def get_db():
 @event.listens_for(Engine, "before_cursor_execute", retval=True)
 def comment_sql_calls(conn, cursor, statement, parameters,
                       context, executemany):
+
+
     if statement.startswith('INSERT INTO users'):
         target = parameters.get("user_id")
         hash_target = hash(target) % 2
-        print(hash_target)
+
         if hash_target % 2 == 0:
             comment = ' /*sharding 0*/;'
         else:
             comment = ' /*sharding 1*/;'
         statement = statement + comment
+
         return statement, parameters
 
-    # elif ('SELECT' and 'WHERE users.user_login = %(user_login_1)s' and 'LIMIT %(param_1)s') in statement:
-    #     for sharding_node in db_nodes:
-    #         sharding_node = f' /*sharding {sharding_node}*/;'
-    #         print(statement)
-    #         print(sharding_node)
-    #         statement = statement + sharding_node
-    #         return statement, parameters
 
-    else:
-        return statement, parameters
+
+    return statement, parameters

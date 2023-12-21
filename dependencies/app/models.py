@@ -18,7 +18,7 @@ class User(Base):
     insert_date = Column(DateTime, default=datetime.utcnow, nullable=False)
     update_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # Define one-to-many relationship with GroupChatParticipants
+    # Определение отношения один-ко-многим с GroupChatParticipants
     group_chat_participants = relationship("GroupChatParticipants", back_populates="user")
     group_chat_messages = relationship("GroupChatMessage", back_populates="user")
 
@@ -31,10 +31,10 @@ class GroupChat(Base):
     insert_date = Column(DateTime, default=datetime.utcnow)
     update_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Define one-to-many relationship with GroupChatParticipants
+    # Определение отношения один-ко-многим с GroupChatParticipants
     group_chat_participants = relationship("GroupChatParticipants", back_populates="group_chat")
 
-    # Define one-to-many relationship with GroupChatMessage
+    # Определение отношения один-ко-многим с GroupChatMessage
     group_chat_messages = relationship("GroupChatMessage", back_populates="group_chat")
 
 
@@ -45,7 +45,7 @@ class GroupChatParticipants(Base):
     group_chat_id = Column(Integer, ForeignKey('group_chats.group_chat_id'), nullable=False)
     user_id = Column(String, ForeignKey('users.user_id'), nullable=False)
 
-    # Define many-to-one relationships
+    # Определение отношения многие-к-одному
     group_chat = relationship("GroupChat", back_populates="group_chat_participants")
     user = relationship("User", back_populates="group_chat_participants")
 
@@ -59,7 +59,7 @@ class GroupChatMessage(Base):
     message_author_id = Column(String, ForeignKey('users.user_id'), nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
-    # Define many-to-one relationships
+    # Определение отношения многие-к-одному
     group_chat = relationship("GroupChat", back_populates="group_chat_messages")
     user = relationship("User", back_populates="group_chat_messages")
 
@@ -73,9 +73,6 @@ class PtPMessage(Base):
     text = Column(String(500), nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
-    # Define many-to-one relationships
+    # Определение отношения многие-к-одному
     sender = relationship("User", foreign_keys=[sender_id])
     receiver = relationship("User", foreign_keys=[receiver_id])
-
-
-

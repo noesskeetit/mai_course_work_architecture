@@ -1,9 +1,10 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.engine import Engine
 from sqlalchemy import event
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import sessionmaker
+
 from models import Base
-from random import choice
+
 # Инициализация базы данных и подключение к MariaDB
 engine = create_engine("mysql+pymysql://root:root@proxysql:6033/messenger_service")
 Base.metadata.create_all(bind=engine)

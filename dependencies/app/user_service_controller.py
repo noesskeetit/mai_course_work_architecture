@@ -1,12 +1,6 @@
 import typing
 import uuid
-from typing import List
-from sqlalchemy.orm import Session
-from fastapi import HTTPException
 
-from user_sharding_methods import get_users_by_login_from_db, get_users_by_firstname_and_lastname, is_exist_user_id, \
-    is_exist_login, \
-    is_exist_email
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -14,6 +8,9 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from db_executor_service import get_db
 from models import User
+from user_sharding_methods import get_users_by_login_from_db, get_users_by_firstname_and_lastname, is_exist_user_id, \
+    is_exist_login, \
+    is_exist_email
 
 app = FastAPI()
 

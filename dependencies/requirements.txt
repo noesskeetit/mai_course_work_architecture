@@ -5,3 +5,7 @@ mysql-connector-python
 mariadb
 python-multipart
 pymysql
+fastapi-cache
+aioredis
+redis
+fastapi-cache2[redis]

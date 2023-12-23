@@ -14,6 +14,8 @@ CREATE TABLE messenger_service.users (
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     update_date DATETIME NULL ON UPDATE CURRENT_TIMESTAMP NOT NULL
 );
+-- Добавление индекса на столбец user_login
+ALTER TABLE messenger_service.users ADD INDEX idx_user_login (user_login);
 
 -- Создание таблицы GroupChat
 CREATE TABLE messenger_service.group_chats (

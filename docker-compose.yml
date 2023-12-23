@@ -1,6 +1,22 @@
 version: '3.2'
 
 services:
+  wrk:
+    image: loadimpact/loadgentest-wrk
+    entrypoint: [ "wrk", "-t100", "-c100", "-d60s", "http://module-auth:80/users/login/user1" ]
+    depends_on:
+      module-auth:
+        condition: service_healthy
+  redis_host:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=pass
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
   db_1:
     image: mariadb
     volumes:
@@ -58,8 +74,15 @@ services:
     entrypoint: [ "uvicorn", "user_service_controller:app", "--host", "0.0.0.0", "--port", "80" ]
     ports:
       - "80:80"
+    healthcheck:
+      test: [ "CMD", "curl", "http://module-auth:80/users/login/user1" ]
+      interval: 1s
+      timeout: 1s
+      retries: 20
     depends_on:
       proxysql:
+        condition: service_healthy
+      redis_host:
         condition: service_healthy
 
   module-group-chat:
@@ -70,6 +93,8 @@ services:
     depends_on:
       proxysql:
         condition: service_healthy
+      redis_host:
+        condition: service_healthy
 
   module-ptp-chat:
     build: ./dependencies
@@ -78,6 +103,8 @@ services:
       - "82:82"
     depends_on:
       proxysql:
+        condition: service_healthy
+      redis_host:
         condition: service_healthy
 
 

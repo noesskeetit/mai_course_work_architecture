@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Index
 from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
@@ -21,6 +21,22 @@ class User(Base):
     # Определение отношения один-ко-многим с GroupChatParticipants
     group_chat_participants = relationship("GroupChatParticipants", back_populates="user")
     group_chat_messages = relationship("GroupChatMessage", back_populates="user")
+
+    # Добавление индекса на столбец user_login
+    Index('idx_user_login', user_login, unique=True)
+
+
+    def dict(self):
+        return {
+            "user_id": self.user_id,
+            "user_login": self.user_login,
+            "user_firstname": self.user_firstname,
+            "user_lastname": self.user_lastname,
+            "user_email": self.user_email,
+            "user_password": self.user_password,
+            "user_title": self.user_title
+        }
+
 
 
 class GroupChat(Base):
